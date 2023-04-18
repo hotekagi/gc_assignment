@@ -1,0 +1,9 @@
+{
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "search.exclude": {
+        "**/.git": true,
+        "**/dist/index.js": true,
+        "**/dist/img/**": true
+    }
+}

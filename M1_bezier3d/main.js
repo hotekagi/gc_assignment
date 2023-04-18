@@ -3,10 +3,10 @@ var canvas;
 var legacygl;
 var drawutil;
 var camera;
-var p0, p1, p2;
+var p0, p1, p2, p3;
 var selected = null;
 
-function eval_quadratic_bezier(p0, p1, p2, t) {
+function eval_cubic_bezier(p0, p1, p2, p3, t) {
   return vec2.scaleAndAdd_ip(
     vec2.scaleAndAdd_ip(vec2.scale([], p0, (1 - t) ** 2), p1, 2 * t * (1 - t)),
     p2,
@@ -38,7 +38,7 @@ function draw() {
   var numsteps = Number(document.getElementById("input_numsteps").value);
   for (var i = 0; i <= numsteps; ++i) {
     var t = i / numsteps;
-    legacygl.vertex2(eval_quadratic_bezier(p0, p1, p2, t));
+    legacygl.vertex2(eval_cubic_bezier(p0, p1, p2, p3, t));
   }
   legacygl.end();
 
@@ -47,7 +47,7 @@ function draw() {
     legacygl.begin(gl.POINTS);
     for (var i = 0; i <= numsteps; ++i) {
       var t = i / numsteps;
-      legacygl.vertex2(eval_quadratic_bezier(p0, p1, p2, t));
+      legacygl.vertex2(eval_cubic_bezier(p0, p1, p2, p3, t));
     }
     legacygl.end();
   }
@@ -59,11 +59,13 @@ function draw() {
     legacygl.vertex2(p0);
     legacygl.vertex2(p1);
     legacygl.vertex2(p2);
+    legacygl.vertex2(p3);
     legacygl.end();
     legacygl.begin(gl.POINTS);
     legacygl.vertex2(p0);
     legacygl.vertex2(p1);
     legacygl.vertex2(p2);
+    legacygl.vertex2(p3);
     legacygl.end();
   }
 }
@@ -104,8 +106,9 @@ function init() {
   camera = get_camera(canvas.width);
   camera.eye = [0, 0, 7];
   p0 = [-0.5, -0.6];
-  p1 = [1.2, 0.5];
-  p2 = [-0.4, 1.3];
+  p1 = [0.7, 0.1];
+  p2 = [1.2, 0.6];
+  p3 = [-0.4, 1.3];
   // event handlers
   canvas.onmousedown = function (evt) {
     var mouse_win = this.get_mousepos(evt);
