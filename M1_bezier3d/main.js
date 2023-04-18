@@ -8,9 +8,17 @@ var selected = null;
 
 function eval_cubic_bezier(p0, p1, p2, p3, t) {
   return vec2.scaleAndAdd_ip(
-    vec2.scaleAndAdd_ip(vec2.scale([], p0, (1 - t) ** 2), p1, 2 * t * (1 - t)),
-    p2,
-    t ** 2
+    vec2.scaleAndAdd_ip(
+      vec2.scaleAndAdd_ip(
+        vec2.scale([], p0, (1 - t) ** 3),
+        p1,
+        3 * t * (1 - t) ** 2
+      ),
+      p2,
+      3 * t ** 2 * (1 - t)
+    ),
+    p3,
+    t ** 3
   );
 }
 
