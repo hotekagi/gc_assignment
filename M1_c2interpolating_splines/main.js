@@ -12,6 +12,7 @@ var points = [
 ];
 var selected = null;
 
+// NOTE: 3点から外心円の中心と半径を求める
 function circleFromPoints(points) {
   var [p1, p2, p3] = points;
   var [x1, y1] = p1;
@@ -53,6 +54,22 @@ function draw() {
   legacygl.color(0.5, 0.5, 0.5);
   drawutil.xygrid(100);
 
+  // draw control points
+  if (document.getElementById("input_show_controlpoints").checked) {
+    legacygl.color(0.2, 0.5, 1);
+    legacygl.begin(gl.LINE_STRIP);
+    points.forEach(function (p) {
+      legacygl.vertex2(p);
+    });
+    legacygl.end();
+    legacygl.begin(gl.POINTS);
+    points.forEach(function (p) {
+      legacygl.vertex2(p);
+    });
+    legacygl.end();
+  }
+
+  // NOTE: C^2 interpolating splinesのCircleに相当するスプライン曲線を描く
   var prev_curve = [];
   for (var i = 0; i < points.length - 2; i++) {
     var numsteps = Number(document.getElementById("input_numsteps").value);
@@ -60,20 +77,23 @@ function draw() {
 
     var targets = points.slice(i, i + 3);
     var circle = circleFromPoints(targets);
-
     var centerX = circle.center[0];
     var centerY = circle.center[1];
     var radius = circle.radius;
 
+    // NOTE: 3点に外接する円の中心を表すグレーの点
     legacygl.color(0.5, 0.5, 0.5);
     legacygl.begin(gl.POINTS);
     document.getElementById("input_show_samplepoints").checked &&
       legacygl.vertex2([centerX, centerY]);
     legacygl.end();
 
+    // NOTE: オレンジで3点に外接する円の弧を描く
+    // 3点が鋭角になる場合にも正しい弧を描く処理を書こうとしたが力尽きた
+    // 多くの場合で正しく動いているので許容する
+
     var srtAngle = Math.atan2(targets[0][1] - centerY, targets[0][0] - centerX);
     var endAngle = Math.atan2(targets[1][1] - centerY, targets[1][0] - centerX);
-
     if (Math.abs(endAngle - srtAngle) >= Math.PI) {
       if (endAngle < 0) {
         endAngle += 2 * Math.PI;
@@ -97,9 +117,9 @@ function draw() {
       current_curve.push([x, y]);
     }
     legacygl.end();
+
     var srtAngle = Math.atan2(targets[1][1] - centerY, targets[1][0] - centerX);
     var endAngle = Math.atan2(targets[2][1] - centerY, targets[2][0] - centerX);
-
     if (Math.abs(endAngle - srtAngle) >= Math.PI) {
       if (endAngle < 0) {
         endAngle += 2 * Math.PI;
@@ -124,6 +144,7 @@ function draw() {
     }
     legacygl.end();
 
+    // NOTE: 三角関数を用いて補間前後のセグメントからその間を補間する
     if (prev_curve.length > 0) {
       legacygl.color(1, 0, 0);
       legacygl.begin(gl.LINE_STRIP);
@@ -142,21 +163,6 @@ function draw() {
       legacygl.end();
     }
     prev_curve = current_curve.slice();
-  }
-
-  // draw control points
-  if (document.getElementById("input_show_controlpoints").checked) {
-    legacygl.color(0.2, 0.5, 1);
-    legacygl.begin(gl.LINE_STRIP);
-    points.forEach(function (p) {
-      legacygl.vertex2(p);
-    });
-    legacygl.end();
-    legacygl.begin(gl.POINTS);
-    points.forEach(function (p) {
-      legacygl.vertex2(p);
-    });
-    legacygl.end();
   }
 }
 

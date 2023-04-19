@@ -70,13 +70,33 @@
         </td>
       </tr>
     </table>
-    <!-- descriptions -->
     <h3>Usage:</h3>
     <ul>
       <li>Shift+Click: Add One Control Point to the Last</li>
       <li>Drag: Move Control Points</li>
       <li>Alt+Drag: Camera Pan</li>
       <li>Alt+Shift+Drag: Camera Zoom</li>
+    </ul>
+    <h3>メモ</h3>
+    <ul>
+      <li>
+        Glitch上にあった元の課題用のサンプルコードをベースに，C^2 interpolating
+        splines の実装をした．
+      </li>
+      <li>
+        Shiftを押しながらクリックすると制御点が増えるようにした．ただし2点が重なると見えにくくなるので，既存の点と距離が短すぎる場所には置けないようにした．
+      </li>
+      <li>座標を保持する配列の順番の関係で，左に伸ばしていくことを推奨</li>
+      <li>最後に追加した制御点をボタンで消すことができる</li>
+      <li>
+        制御点は相変わらずドラッグで動かすことができて，ズームやパンもそのままである．曲線を近似する点の数の調節や，制御点と外接円の表示切替ができる．
+      </li>
+      <li>
+        外接円が描かれる角度の制御が適当なので，連続する3点が張る角が鋭角になるように取ると外接円がおかしくなってスプライン曲線も変なものになってしまう．
+      </li>
+      <li>
+        しかし，元々Circleによる補間は緩い曲線に使うものなので，そのような使われ方は想定されないものとして，このケースによる挙動は許容する．
+      </li>
     </ul>
   </body>
 </html>
