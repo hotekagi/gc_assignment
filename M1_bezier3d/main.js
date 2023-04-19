@@ -125,10 +125,10 @@ function init() {
       return;
     }
     // pick nearest object
-    var points = [p0, p1, p2];
+    var points = [p0, p1, p2, p3];
     var viewport = [0, 0, canvas.width, canvas.height];
     var dist_min = 10000000;
-    for (var i = 0; i < 3; ++i) {
+    for (var i = 0; i < 4; ++i) {
       var object_win = glu.project(
         [points[i][0], points[i][1], 0],
         legacygl.uniforms.modelview.value,
