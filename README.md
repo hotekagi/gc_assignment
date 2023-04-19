@@ -10,9 +10,12 @@ M1
 
 https://utokyo-iscg-2023-assigment-m1-spline.glitch.me
 
-
 implementation:
 
 M1
 
 https://hotekagi.github.io/gc_assignment/M1_bezier2d/index.html
+
+https://hotekagi.github.io/gc_assignment/M1_bezier3d/index.html
+
+https://hotekagi.github.io/gc_assignment/M1_c2interpolating_splines/index.html
