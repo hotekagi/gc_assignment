@@ -4,15 +4,15 @@ This repository is my private sample code for the assignment of ISGC.
 
 Do not copy or refer to files in this repository for your assignment.
 
-reference:
+## reference
 
-M1
+M1:
 
 https://utokyo-iscg-2023-assigment-m1-spline.glitch.me
 
-implementation:
+## implementation
 
-M1
+M1:
 
 https://hotekagi.github.io/gc_assignment/M1_bezier2d/index.html
 
