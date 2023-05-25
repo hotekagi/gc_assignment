@@ -10,6 +10,10 @@ M1:
 
 https://utokyo-iscg-2023-assigment-m1-spline.glitch.me
 
+A1:
+
+https://utokyo-iscg-2023-assignment-a1-ik.glitch.me/
+
 ## implementation
 
 M1:
