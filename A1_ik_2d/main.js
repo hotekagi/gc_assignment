@@ -35,7 +35,101 @@ function update_position() {
 }
 
 function compute_ik(target_position) {
-  // TODO: ここにCCD法を実装する
+  // 反復回数
+  const maxIterations = 10000;
+
+  // 反復処理
+  for (let iteration = 0; iteration < maxIterations; iteration++) {
+    update_position();
+
+    // 3番目のangleを、target_position - linkages[2].position に向かうように更新する
+
+    let idx = 3;
+    let current_position = linkages[idx - 1].position;
+
+    let angle_to_target =
+      (Math.atan2(
+        target_position[1] - current_position[1],
+        target_position[0] - current_position[0]
+      ) *
+        180) /
+      Math.PI;
+
+    let angle_ofset = 0;
+    for (let j = 0; j < idx; ++j) {
+      angle_ofset += linkages[j].angle;
+    }
+    linkages[idx].angle = angle_to_target - angle_ofset;
+    update_position();
+
+    // 2番目のangleを、target_position - linkages[1].position に向かうように更新する
+
+    idx = 2;
+    current_position = linkages[idx - 1].position;
+
+    angle_to_target =
+      (Math.atan2(
+        target_position[1] - current_position[1],
+        target_position[0] - current_position[0]
+      ) *
+        180) /
+      Math.PI;
+
+    let angle_to_leaf =
+      (Math.atan2(
+        linkages[linkages.length - 1].position[1] - current_position[1],
+        linkages[linkages.length - 1].position[0] - current_position[0]
+      ) *
+        180) /
+      Math.PI;
+    linkages[idx].angle = angle_to_target - angle_to_leaf;
+    update_position();
+
+    // 1番目のangleを、target_position - linkages[0].position に向かうように更新する
+
+    idx = 1;
+    current_position = linkages[idx - 1].position;
+
+    angle_to_target =
+      (Math.atan2(
+        target_position[1] - current_position[1],
+        target_position[0] - current_position[0]
+      ) *
+        180) /
+      Math.PI;
+
+    angle_to_leaf =
+      (Math.atan2(
+        linkages[linkages.length - 1].position[1] - current_position[1],
+        linkages[linkages.length - 1].position[0] - current_position[0]
+      ) *
+        180) /
+      Math.PI;
+
+    linkages[idx].angle = angle_to_target - angle_to_leaf;
+    update_position();
+
+    // 0番目のangleを、更新する
+    current_position = [0, 0];
+    angle_to_target =
+      (Math.atan2(
+        target_position[1] - current_position[1],
+        target_position[0] - current_position[0]
+      ) *
+        180) /
+      Math.PI;
+
+    angle_to_leaf =
+      (Math.atan2(
+        linkages[linkages.length - 1].position[1] - current_position[1],
+        linkages[linkages.length - 1].position[0] - current_position[0]
+      ) *
+        180) /
+      Math.PI;
+
+    linkages[0].angle = angle_to_target - angle_to_leaf;
+    update_position();
+  }
 }
 
 function draw() {
