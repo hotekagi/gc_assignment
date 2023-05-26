@@ -23,3 +23,7 @@ https://hotekagi.github.io/gc_assignment/M1_bezier2d/index.html
 https://hotekagi.github.io/gc_assignment/M1_bezier3d/index.html
 
 https://hotekagi.github.io/gc_assignment/M1_c2interpolating_splines/index.html
+
+A1:
+
+https://hotekagi.github.io/gc_assignment/A1_minimum/index.html
