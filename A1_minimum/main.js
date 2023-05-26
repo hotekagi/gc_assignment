@@ -155,7 +155,7 @@ function draw() {
 const LINKAGES = [
   { position: [0, 0], angle: 0, length: 0.3 },
   { position: [0, 0], angle: 0, length: 0.5 },
-  { position: [0, 0], angle: 0, length: 0.4 },
+  { position: [0, 0], angle: 0, length: 0.6 },
   { position: [0, 0], angle: 0, length: 0.6 },
   { position: [0, 0], angle: 0, length: 0.5 },
 ];
@@ -213,8 +213,8 @@ function compute_ik(target_position) {
         target_position[0] - root_position(idx)[0]
       );
       angle_to_leaf = Math.atan2(
-        LINKAGES[LINKAGES.length - 1].position[1] - root_position(idx)[1],
-        LINKAGES[LINKAGES.length - 1].position[0] - root_position(idx)[0]
+        LINKAGES[SELECTED].position[1] - root_position(idx)[1],
+        LINKAGES[SELECTED].position[0] - root_position(idx)[0]
       );
       LINKAGES[idx].angle = (angle_to_target - angle_to_leaf) * (180 / Math.PI);
 
