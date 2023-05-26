@@ -79,10 +79,13 @@ function init() {
     let target_position = vec3.add([], CAMERA.eye, eye_to_intersection);
 
     const target_distance = vec2.length(target_position);
-    const min_distance =
-      LINKAGES.reduce(function (acc, linkage) {
-        return acc + linkage.length;
-      }, 0) / 2;
+    const min_distance = LINKAGES.slice(0, SELECTED + 1).reduce(function (
+      acc,
+      linkage
+    ) {
+      return acc + linkage.length;
+    },
+    0);
     if (target_distance < min_distance) {
       target_position = vec2.scale(
         [],
@@ -92,7 +95,6 @@ function init() {
     }
 
     compute_ik([target_position[0], target_position[1]]);
-
     draw();
 
     LEGACY_GL.begin(GL.LINES);
@@ -131,6 +133,13 @@ function draw() {
   });
   LEGACY_GL.end();
 
+  LEGACY_GL.begin(GL.LINE_STRIP);
+  LEGACY_GL.color(0, 0, 1);
+  for (let idx = SELECTED; idx < LINKAGES.length; idx++) {
+    LEGACY_GL.vertex2(LINKAGES[idx].position);
+  }
+  LEGACY_GL.end();
+
   LEGACY_GL.begin(GL.POINTS);
   LEGACY_GL.color(0, 0, 1);
   LEGACY_GL.vertex(0, 0, 0);
@@ -138,15 +147,33 @@ function draw() {
     LEGACY_GL.color(1, 0, 0);
     LEGACY_GL.vertex2(linkage.position);
   });
+  LEGACY_GL.color(0, 1, 0);
+  LEGACY_GL.vertex2(LINKAGES[SELECTED].position);
   LEGACY_GL.end();
 }
 
 const LINKAGES = [
+  { position: [0, 0], angle: 0, length: 0.3 },
+  { position: [0, 0], angle: 0, length: 0.5 },
   { position: [0, 0], angle: 0, length: 0.4 },
   { position: [0, 0], angle: 0, length: 0.6 },
   { position: [0, 0], angle: 0, length: 0.5 },
-  { position: [0, 0], angle: 0, length: 0.7 },
 ];
+let SELECTED = LINKAGES.length - 2;
+
+function decrease_selected() {
+  SELECTED = Math.max(0, SELECTED - 1);
+}
+function increase_selected() {
+  SELECTED = Math.min(LINKAGES.length - 1, SELECTED + 1);
+}
+function reset_angles() {
+  LINKAGES.forEach(function (linkage) {
+    linkage.angle = 0;
+  });
+  update_position();
+  draw();
+}
 
 function update_position() {
   LINKAGES.forEach(function (linkage, idx) {
@@ -170,7 +197,7 @@ function compute_ik(target_position) {
 
   const max_iter = 10;
   for (_ = 0; _ < max_iter; ++_) {
-    idx = LINKAGES.length - 1;
+    idx = SELECTED;
 
     angle_to_target = Math.atan2(
       target_position[1] - root_position(idx)[1],
@@ -180,7 +207,7 @@ function compute_ik(target_position) {
     LINKAGES[idx].angle = (angle_to_target * 180) / Math.PI;
     update_position();
 
-    for (idx = LINKAGES.length - 2; idx >= 0; --idx) {
+    for (idx = SELECTED - 1; idx >= 0; --idx) {
       angle_to_target = Math.atan2(
         target_position[1] - root_position(idx)[1],
         target_position[0] - root_position(idx)[0]
@@ -196,36 +223,5 @@ function compute_ik(target_position) {
       }
       update_position();
     }
-  }
-}
-
-// written by copilot
-function __compute_ik(target_position) {
-  const tolerance = 0.01;
-  const max_iteration = 100;
-  const damping = 0.5;
-
-  for (let i = 0; i < max_iteration; ++i) {
-    let error = 0;
-    for (let j = LINKAGES.length - 1; j >= 0; --j) {
-      const linkage = LINKAGES[j];
-      const position = linkage.position;
-      const angle = linkage.angle;
-      const length = linkage.length;
-
-      const diff = vec2.sub([], target_position, position);
-      const distance = vec2.length(diff);
-      const angle_to_target = Math.atan2(diff[1], diff[0]);
-      const angle_diff = angle_to_target - (angle * Math.PI) / 180;
-      const angle_diff_deg = (angle_diff * 180) / Math.PI;
-
-      error += Math.abs(angle_diff_deg);
-
-      const delta_angle = angle_diff * damping;
-      linkage.angle += delta_angle;
-      update_position();
-    }
-
-    if (error < tolerance) break;
   }
 }
