@@ -23,8 +23,23 @@
       style="border: 1px solid #000000"
     ></canvas>
     <br />
-    <button onclick="decrease_selected(); draw();">◀︎</button>
-    <button onclick="increase_selected(); draw();">▶︎</button>
-    <button onclick="reset_angles(); draw();">reset</button>
+    select end effector : the green point ( angle of blue branch is fixed )
+    <br />
+    <button
+      onclick="decrease_selected(); draw();"
+      style="padding: auto; margin: 5px"
+    >
+      ←
+    </button>
+    <button
+      onclick="increase_selected(); draw();"
+      style="padding: auto; margin: 5px"
+    >
+      →
+    </button>
+    <br />
+    <button onclick="reset_angles(); draw();" style="padding: auto">
+      reset angles
+    </button>
   </body>
 </html>
