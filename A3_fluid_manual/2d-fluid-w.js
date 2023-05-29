@@ -21,12 +21,13 @@ const context = canvas.getContext("2d");
 /**
  * 空間離散化の解像度
  */
-const numCells = 64;
+const numCells_x = 112;
+const numCells_y = 80;
 
 /**
  * セルの総数（ここでは便宜上境界にもセルを配置している)
  */
-const size = (numCells + 2) * (numCells + 2);
+const size = (numCells_x + 2) * (numCells_y + 2);
 
 /**
  * 速度（x方向）を格納をする配列
@@ -59,7 +60,7 @@ function clamp(x, x_min, x_max) {
 }
 
 function index(i, j) {
-  return i + (numCells + 2) * j;
+  return i + (numCells_x + 2) * j;
 }
 
 /**
@@ -82,42 +83,44 @@ function addSource(x, s) {
  */
 function setBoundary(x, boundaryType) {
   // 上下のエッジについて境界条件を適用する
-  for (let i = 1; i <= numCells; ++i) {
+  for (let i = 1; i <= numCells_x; ++i) {
     if (boundaryType == "top_bottom_walls") {
       // 上のエッジ
       x[index(i, 0)] = -x[index(i, 1)];
       // 下のエッジ
-      x[index(i, numCells + 1)] = -x[index(i, numCells)];
+      x[index(i, numCells_y + 1)] = -x[index(i, numCells_y)];
     } else {
       // 上のエッジ
       x[index(i, 0)] = x[index(i, 1)];
       // 下のエッジ
-      x[index(i, numCells + 1)] = x[index(i, numCells)];
+      x[index(i, numCells_y + 1)] = x[index(i, numCells_y)];
     }
   }
   // 左右のエッジについて境界条件を適用する
-  for (let j = 1; j <= numCells; ++j) {
+  for (let j = 1; j <= numCells_y; ++j) {
     if (boundaryType == "left_right_walls") {
       // 左のエッジ
       x[index(0, j)] = -x[index(1, j)];
       // 右のエッジ
-      x[index(numCells + 1, j)] = -x[index(numCells, j)];
+      x[index(numCells_x + 1, j)] = -x[index(numCells_x, j)];
     } else {
       // 左のエッジ
       x[index(0, j)] = x[index(1, j)];
       // 右のエッジ
-      x[index(numCells + 1, j)] = x[index(numCells, j)];
+      x[index(numCells_x + 1, j)] = x[index(numCells_x, j)];
     }
   }
 
   // 四隅のセルには近傍のエッジのセルの平均値を代入しておく
   x[index(0, 0)] = 0.5 * (x[index(0, 1)] + x[index(1, 0)]);
-  x[index(numCells + 1, 0)] =
-    0.5 * (x[index(numCells + 1, 1)] + x[index(numCells, 0)]);
-  x[index(0, numCells + 1)] =
-    0.5 * (x[index(0, numCells)] + x[index(1, numCells + 1)]);
-  x[index(numCells + 1, numCells + 1)] =
-    0.5 * (x[index(numCells + 1, numCells)] + x[index(numCells, numCells + 1)]);
+  x[index(numCells_x + 1, 0)] =
+    0.5 * (x[index(numCells_x + 1, 1)] + x[index(numCells_x, 0)]);
+  x[index(0, numCells_y + 1)] =
+    0.5 * (x[index(0, numCells_y)] + x[index(1, numCells_y + 1)]);
+  x[index(numCells_x + 1, numCells_y + 1)] =
+    0.5 *
+    (x[index(numCells_x + 1, numCells_y)] +
+      x[index(numCells_x, numCells_y + 1)]);
 }
 
 /**
@@ -137,16 +140,17 @@ function diffuse(x, x_0, boundaryType) {
   const numIters = 4;
 
   // セルの大きさ（空間離散化の幅）
-  const h = 1.0 / numCells;
+  const h_x = 1.0 / numCells_x;
+  const h_y = 1.0 / numCells_y;
 
   // ガイスザイデル法の計算で用いる係数
-  const a = (dt * diffusion_rate) / (h * h);
+  const a = (dt * diffusion_rate) / (h_x * h_y);
 
   // ガウスザイデル法を使って拡散方程式を解く
   for (let k = 0; k < numIters; ++k) {
     // 各セルにガウスザイデル法の更新式を適用する
-    for (let i = 1; i <= numCells; ++i) {
-      for (let j = 1; j <= numCells; ++j) {
+    for (let i = 1; i <= numCells_x; ++i) {
+      for (let j = 1; j <= numCells_y; ++j) {
         x[index(i, j)] =
           x_0[index(i, j)] +
           a *
@@ -183,19 +187,19 @@ function diffuse(x, x_0, boundaryType) {
  * @param  {string} boundaryType 'continuous', 'left_right_walls', 'top_bottom_walls' のいずれか
  */
 function advect(x, x_0, u_0, v_0, boundaryType) {
-  for (let i = 1; i <= numCells; ++i) {
-    for (let j = 1; j <= numCells; ++j) {
+  for (let i = 1; i <= numCells_x; ++i) {
+    for (let j = 1; j <= numCells_y; ++j) {
       // TODO: バックトレースした先の座標値 (p_x, p_y) を計算する
-      let p_x = i - dt * u_0[index(i, j)] * numCells;
-      let p_y = j - dt * v_0[index(i, j)] * numCells;
+      let p_x = i - dt * u_0[index(i, j)] * numCells_x;
+      let p_y = j - dt * v_0[index(i, j)] * numCells_y;
       // TODO: コーナーケース（境界付近）の処理をする（計算領域からはみ出ていた場合）
       // TODO: バイリニア補間の対象となるセルのインデックスを計算する
       // TODO: バイリニア補間のウェイトを計算する
       // TODO: バイニリア補間を計算する
       if (p_x < 0.5) p_x = 0.5;
-      if (p_x > numCells + 0.5) p_x = numCells + 0.5;
+      if (p_x > numCells_x + 0.5) p_x = numCells_x + 0.5;
       if (p_y < 0.5) p_y = 0.5;
-      if (p_y > numCells + 0.5) p_y = numCells + 0.5;
+      if (p_y > numCells_y + 0.5) p_y = numCells_y + 0.5;
       let i0 = Math.floor(p_x);
       let i1 = i0 + 1;
       let j0 = Math.floor(p_y);
@@ -226,7 +230,8 @@ function project(u, v, p, div) {
   const numIters = 10;
 
   // セルの大きさ（空間離散化の幅）
-  const h = 1.0 / numCells;
+  const h_x = 1.0 / numCells_x;
+  const h_y = 1.0 / numCells_y;
 
   // 解を格納するためのバッファをゼロで初期化しておく
   for (let i = 0; i < size; ++i) {
@@ -234,11 +239,11 @@ function project(u, v, p, div) {
   }
 
   // TODO: 各セルの発散を中心差分法により計算する
-  for (let i = 1; i <= numCells; ++i) {
-    for (let j = 1; j <= numCells; ++j) {
+  for (let i = 1; i <= numCells_x; ++i) {
+    for (let j = 1; j <= numCells_y; ++j) {
       div[index(i, j)] =
-        ((u[index(i + 1, j)] - u[index(i - 1, j)]) / -2) * h +
-        ((v[index(i, j + 1)] - v[index(i, j - 1)]) / -2) * h;
+        ((u[index(i + 1, j)] - u[index(i - 1, j)]) / -2) * h_x +
+        ((v[index(i, j + 1)] - v[index(i, j - 1)]) / -2) * h_y;
     }
   }
   setBoundary(div, "continuous");
@@ -246,8 +251,8 @@ function project(u, v, p, div) {
   // ガウスザイデル法によってポアソン方程式を解くことでスカラー場を計算する
   for (let k = 0; k < numIters; ++k) {
     // TODO: 各セルにガウスザイデル法の更新式を適用する
-    for (let i = 1; i <= numCells; ++i) {
-      for (let j = 1; j <= numCells; ++j) {
+    for (let i = 1; i <= numCells_x; ++i) {
+      for (let j = 1; j <= numCells_y; ++j) {
         p[index(i, j)] =
           (p[index(i - 1, j)] +
             p[index(i + 1, j)] +
@@ -263,10 +268,10 @@ function project(u, v, p, div) {
   }
 
   // TODO: 速度場から得られたスカラー場の勾配（中央差分法で計算）を引く
-  for (let i = 1; i <= numCells; ++i) {
-    for (let j = 1; j <= numCells; ++j) {
-      u[index(i, j)] -= (p[index(i + 1, j)] - p[index(i - 1, j)]) / (2 * h);
-      v[index(i, j)] -= (p[index(i, j + 1)] - p[index(i, j - 1)]) / (2 * h);
+  for (let i = 1; i <= numCells_x; ++i) {
+    for (let j = 1; j <= numCells_y; ++j) {
+      u[index(i, j)] -= (p[index(i + 1, j)] - p[index(i - 1, j)]) / (2 * h_x);
+      v[index(i, j)] -= (p[index(i, j + 1)] - p[index(i, j - 1)]) / (2 * h_y);
     }
   }
   setBoundary(u, "left_right_walls");
@@ -315,13 +320,13 @@ function step() {
 function draw() {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
-  const cellWidth = canvas.width / (numCells + 2);
-  const cellHeight = canvas.height / (numCells + 2);
+  const cellWidth = canvas.width / (numCells_x + 2);
+  const cellHeight = canvas.height / (numCells_y + 2);
 
   context.strokeStyle = "rgba(100, 100, 100, 0.2)";
   context.lineWidth = 2.0;
-  for (let i = 1; i <= numCells; ++i) {
-    for (let j = 1; j <= numCells; ++j) {
+  for (let i = 1; i <= numCells_x; ++i) {
+    for (let j = 1; j <= numCells_y; ++j) {
       // Draw a grid with its color-coded density
       const scale = 0.08;
       const rgb = evaluate_cmap(
@@ -340,11 +345,11 @@ function draw() {
   }
 
   // Visualize velocities
-  const velColor = "rgba(255, 255, 255, 0.4)";
+  const velColor = "rgba(181, 226, 255, 0.2)";
   context.strokeStyle = velColor;
   context.lineWidth = 2.0;
-  for (let i = 1; i <= numCells; ++i) {
-    for (let j = 1; j <= numCells; ++j) {
+  for (let i = 1; i <= numCells_x; ++i) {
+    for (let j = 1; j <= numCells_y; ++j) {
       const scale = 80.0;
 
       const centerX = (i + 0.5) * cellWidth;
@@ -360,78 +365,76 @@ function draw() {
   }
 }
 
-// Define variables for managing animation
-let frameCount = 0;
-let simTime = 0.0;
-let drawTime = 0.0;
-
 function update() {
   // 速度や密度のソースを指定する
   dSource.fill(0.0);
   uSource.fill(0.0);
   vSource.fill(0.0);
-  dSource[index(numCells / 8, numCells / 2)] = 4000.0;
-  uSource[index(numCells / 8, numCells / 2)] = 1000.0;
+  if (
+    50 < prevMouseX < canvas.width - 50 &&
+    50 < prevMouseY < canvas.height - 50
+  ) {
+    const nowX = Math.round((numCells_x * mouseX) / canvas.width);
+    const nowY = Math.round((numCells_y * mouseY) / canvas.height);
+    const prevX = Math.round((numCells_x * prevMouseX) / canvas.width);
+    const prevY = Math.round((numCells_y * prevMouseY) / canvas.height);
+
+    for (let i = 0; i < 10; ++i) {
+      const x = Math.round(prevX + (nowX - prevX) * (i / 5));
+      const y = Math.round(prevY + (nowY - prevY) * (i / 5));
+      dSource[index(x, y)] = 500.0;
+      dSource[index(x - 1, y)] = 500.0;
+      dSource[index(x + 1, y)] = 500.0;
+      dSource[index(x, y - 1)] = 500.0;
+      dSource[index(x, y + 1)] = 500.0;
+      uSource[index(x, y)] = mouseSpeedX * 500.0;
+      uSource[index(x - 1, y)] = mouseSpeedX * 500.0;
+      uSource[index(x + 1, y)] = mouseSpeedX * 500.0;
+      uSource[index(x, y - 1)] = mouseSpeedX * 500.0;
+      uSource[index(x, y + 1)] = mouseSpeedX * 500.0;
+      vSource[index(x, y)] = mouseSpeedY * 500.0;
+      vSource[index(x - 1, y)] = mouseSpeedY * 500.0;
+      vSource[index(x + 1, y)] = mouseSpeedY * 500.0;
+      vSource[index(x, y - 1)] = mouseSpeedY * 500.0;
+      vSource[index(x, y + 1)] = mouseSpeedY * 500.0;
+    }
+  }
 
   // シミュレーションを一ステップ前に進める
-  const time_0 = performance.now();
   for (let i = 0; i < numSubSteps; ++i) {
     step();
   }
-  const time_1 = performance.now();
 
-  // 現在の状態を描画する
   draw();
-  const time_2 = performance.now();
-
-  // 計算にかかった時間を記録する
-  simTime += time_1 - time_0;
-  drawTime += time_2 - time_1;
-
-  // 計算にかかった時間を表示する
-  const frequency = 20;
-  if (frameCount % frequency == 0) {
-    document.getElementById("simTime").innerHTML = (
-      simTime / frequency
-    ).toFixed(3);
-    document.getElementById("drawTime").innerHTML = (
-      drawTime / frequency
-    ).toFixed(3);
-
-    simTime = 0.0;
-    drawTime = 0.0;
-  }
-
-  // 描画結果を画像ファイルに保存する
-  const exportImage = false;
-  if (exportImage) {
-    const safeWaitingTime = 200;
-    const fileName = String(frameCount).padStart(4, "0") + ".png";
-    const maxFrameCount = 180;
-    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-    canvas.toBlob(function (blob) {
-      saveAs(blob, fileName);
-    });
-
-    if (++frameCount < maxFrameCount) {
-      sleep(safeWaitingTime).then(() => {
-        window.requestAnimationFrame(update);
-      });
-    }
-    return;
-  }
-
   // 再帰的に関数を呼び出すことでアニメーションを継続する
-  const maxFrameCount = 1800;
-  if (++frameCount < maxFrameCount) {
-    window.requestAnimationFrame(update);
-  }
+  window.requestAnimationFrame(update);
 }
 
-/**
- * start - アニメーションを開始する
- */
-function start() {
-  update();
-}
+// マウスの座標と速度を格納する変数
+let mouseX = 0;
+let mouseY = 0;
+let mouseSpeedX = 0;
+let mouseSpeedY = 0;
+let prevMouseX = 0;
+let prevMouseY = 0;
+let prevTimestamp;
+
+// マウスの移動イベントのリスナーを追加
+canvas.addEventListener("mousemove", function (event) {
+  // 現在のマウス座標を取得
+  mouseX = event.clientX - canvas.offsetLeft;
+  mouseY = event.clientY - canvas.offsetTop;
+
+  // 前回のマウス座標との差から速度を計算
+  const timestamp = new Date().getTime();
+  if (prevTimestamp) {
+    var timeDiff = timestamp - prevTimestamp;
+    mouseSpeedX = ((mouseX - prevMouseX) / timeDiff) | 0;
+    mouseSpeedY = ((mouseY - prevMouseY) / timeDiff) | 0;
+  }
+
+  // 前回の座標とタイムスタンプを更新
+  prevMouseX = mouseX;
+  prevMouseY = mouseY;
+  prevTimestamp = timestamp;
+});

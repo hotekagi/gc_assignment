@@ -340,7 +340,7 @@ function draw() {
   }
 
   // Visualize velocities
-  const velColor = "rgba(255, 255, 255, 0.4)";
+  const velColor = "rgba(181, 226, 255, 0.2)";
   context.strokeStyle = velColor;
   context.lineWidth = 2.0;
   for (let i = 1; i <= numCells; ++i) {
@@ -360,78 +360,72 @@ function draw() {
   }
 }
 
-// Define variables for managing animation
-let frameCount = 0;
-let simTime = 0.0;
-let drawTime = 0.0;
-
 function update() {
   // 速度や密度のソースを指定する
   dSource.fill(0.0);
   uSource.fill(0.0);
   vSource.fill(0.0);
-  dSource[index(numCells / 8, numCells / 2)] = 4000.0;
-  uSource[index(numCells / 8, numCells / 2)] = 1000.0;
+  if (
+    50 < prevMouseX < canvas.width - 50 &&
+    50 < prevMouseY < canvas.height - 50
+  ) {
+    const nowX = Math.round((numCells * mouseX) / canvas.width);
+    const nowY = Math.round((numCells * mouseY) / canvas.height);
+    const prevX = Math.round((numCells * prevMouseX) / canvas.width);
+    const prevY = Math.round((numCells * prevMouseY) / canvas.height);
+
+    for (let i = 0; i < 10; ++i) {
+      const x = Math.round(prevX + (nowX - prevX) * (i / 5));
+      const y = Math.round(prevY + (nowY - prevY) * (i / 5));
+      dSource[index(x, y)] = 1000.0;
+      uSource[index(x, y)] = mouseSpeedX * 500.0;
+      uSource[index(x - 1, y)] = mouseSpeedX * 500.0;
+      uSource[index(x + 1, y)] = mouseSpeedX * 500.0;
+      uSource[index(x, y - 1)] = mouseSpeedX * 500.0;
+      uSource[index(x, y + 1)] = mouseSpeedX * 500.0;
+      vSource[index(x, y)] = mouseSpeedY * 500.0;
+      vSource[index(x - 1, y)] = mouseSpeedY * 500.0;
+      vSource[index(x + 1, y)] = mouseSpeedY * 500.0;
+      vSource[index(x, y - 1)] = mouseSpeedY * 500.0;
+      vSource[index(x, y + 1)] = mouseSpeedY * 500.0;
+    }
+  }
 
   // シミュレーションを一ステップ前に進める
-  const time_0 = performance.now();
   for (let i = 0; i < numSubSteps; ++i) {
     step();
   }
-  const time_1 = performance.now();
 
-  // 現在の状態を描画する
   draw();
-  const time_2 = performance.now();
-
-  // 計算にかかった時間を記録する
-  simTime += time_1 - time_0;
-  drawTime += time_2 - time_1;
-
-  // 計算にかかった時間を表示する
-  const frequency = 20;
-  if (frameCount % frequency == 0) {
-    document.getElementById("simTime").innerHTML = (
-      simTime / frequency
-    ).toFixed(3);
-    document.getElementById("drawTime").innerHTML = (
-      drawTime / frequency
-    ).toFixed(3);
-
-    simTime = 0.0;
-    drawTime = 0.0;
-  }
-
-  // 描画結果を画像ファイルに保存する
-  const exportImage = false;
-  if (exportImage) {
-    const safeWaitingTime = 200;
-    const fileName = String(frameCount).padStart(4, "0") + ".png";
-    const maxFrameCount = 180;
-    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-    canvas.toBlob(function (blob) {
-      saveAs(blob, fileName);
-    });
-
-    if (++frameCount < maxFrameCount) {
-      sleep(safeWaitingTime).then(() => {
-        window.requestAnimationFrame(update);
-      });
-    }
-    return;
-  }
-
   // 再帰的に関数を呼び出すことでアニメーションを継続する
-  const maxFrameCount = 1800;
-  if (++frameCount < maxFrameCount) {
-    window.requestAnimationFrame(update);
-  }
+  window.requestAnimationFrame(update);
 }
 
-/**
- * start - アニメーションを開始する
- */
-function start() {
-  update();
-}
+// マウスの座標と速度を格納する変数
+let mouseX = 0;
+let mouseY = 0;
+let mouseSpeedX = 0;
+let mouseSpeedY = 0;
+let prevMouseX = 0;
+let prevMouseY = 0;
+let prevTimestamp;
+
+// マウスの移動イベントのリスナーを追加
+canvas.addEventListener("mousemove", function (event) {
+  // 現在のマウス座標を取得
+  mouseX = event.clientX - canvas.offsetLeft;
+  mouseY = event.clientY - canvas.offsetTop;
+
+  // 前回のマウス座標との差から速度を計算
+  const timestamp = new Date().getTime();
+  if (prevTimestamp) {
+    var timeDiff = timestamp - prevTimestamp;
+    mouseSpeedX = ((mouseX - prevMouseX) / timeDiff) | 0;
+    mouseSpeedY = ((mouseY - prevMouseY) / timeDiff) | 0;
+  }
+
+  // 前回の座標とタイムスタンプを更新
+  prevMouseX = mouseX;
+  prevMouseY = mouseY;
+  prevTimestamp = timestamp;
+});
