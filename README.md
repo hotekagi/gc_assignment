@@ -37,3 +37,7 @@ https://hotekagi.github.io/gc_assignment/A1_minimum/index.html
 A3:
 
 https://hotekagi.github.io/gc_assignment/A3_fluid_min/index.html
+
+https://hotekagi.github.io/gc_assignment/A3_fluid_manual/index-w.html
+
+https://hotekagi.github.io/gc_assignment/A3_fluid_manual/index-s.html

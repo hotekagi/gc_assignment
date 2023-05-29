@@ -365,6 +365,8 @@ function draw() {
   }
 }
 
+let fluidSpeed = 500.0;
+
 function update() {
   // 速度や密度のソースを指定する
   dSource.fill(0.0);
@@ -387,16 +389,16 @@ function update() {
       dSource[index(x + 1, y)] = 500.0;
       dSource[index(x, y - 1)] = 500.0;
       dSource[index(x, y + 1)] = 500.0;
-      uSource[index(x, y)] = mouseSpeedX * 500.0;
-      uSource[index(x - 1, y)] = mouseSpeedX * 500.0;
-      uSource[index(x + 1, y)] = mouseSpeedX * 500.0;
-      uSource[index(x, y - 1)] = mouseSpeedX * 500.0;
-      uSource[index(x, y + 1)] = mouseSpeedX * 500.0;
-      vSource[index(x, y)] = mouseSpeedY * 500.0;
-      vSource[index(x - 1, y)] = mouseSpeedY * 500.0;
-      vSource[index(x + 1, y)] = mouseSpeedY * 500.0;
-      vSource[index(x, y - 1)] = mouseSpeedY * 500.0;
-      vSource[index(x, y + 1)] = mouseSpeedY * 500.0;
+      uSource[index(x, y)] = mouseSpeedX * fluidSpeed;
+      uSource[index(x - 1, y)] = mouseSpeedX * fluidSpeed;
+      uSource[index(x + 1, y)] = mouseSpeedX * fluidSpeed;
+      uSource[index(x, y - 1)] = mouseSpeedX * fluidSpeed;
+      uSource[index(x, y + 1)] = mouseSpeedX * fluidSpeed;
+      vSource[index(x, y)] = mouseSpeedY * fluidSpeed;
+      vSource[index(x - 1, y)] = mouseSpeedY * fluidSpeed;
+      vSource[index(x + 1, y)] = mouseSpeedY * fluidSpeed;
+      vSource[index(x, y - 1)] = mouseSpeedY * fluidSpeed;
+      vSource[index(x, y + 1)] = mouseSpeedY * fluidSpeed;
     }
   }
 
@@ -437,4 +439,9 @@ canvas.addEventListener("mousemove", function (event) {
   prevMouseX = mouseX;
   prevMouseY = mouseY;
   prevTimestamp = timestamp;
+});
+
+const slider = document.getElementById("slider");
+slider.addEventListener("input", function () {
+  fluidSpeed = parseFloat(slider.value).toFixed(1);
 });

@@ -13,8 +13,6 @@
       height="800"
       style="border: 2px solid #eeeeee"
     ></canvas>
-    <script src="js-colormaps.js"></script>
-    <script src="2d-fluid-s.js"></script>
     <br />
     <button
       onclick="location.href='index-w.html'"
@@ -22,5 +20,17 @@
     >
       Jump To Wide Version
     </button>
+    Input Velocity: Slow
+    <input
+      type="range"
+      name="speed"
+      id="slider"
+      min="0.0"
+      max="3000.0"
+      value="500.0"
+    />
+    Fast
+    <script src="js-colormaps.js"></script>
+    <script src="2d-fluid-s.js"></script>
   </body>
 </html>
