@@ -18,6 +18,8 @@ A3:
 
 https://utokyo-iscg-2023-a3-fluid.glitch.me
 
+http://graphics.cs.cmu.edu/nsp/course/15-464/Fall09/papers/StamFluidforGames.pdf
+
 ## implementation
 
 M1:

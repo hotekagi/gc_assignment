@@ -186,13 +186,27 @@ function advect(x, x_0, u_0, v_0, boundaryType) {
   for (let i = 1; i <= numCells; ++i) {
     for (let j = 1; j <= numCells; ++j) {
       // TODO: バックトレースした先の座標値 (p_x, p_y) を計算する
-      // let p_x = ...
-      // let p_y = ...
+      let p_x = i - dt * u_0[index(i, j)] * numCells;
+      let p_y = j - dt * v_0[index(i, j)] * numCells;
       // TODO: コーナーケース（境界付近）の処理をする（計算領域からはみ出ていた場合）
       // TODO: バイリニア補間の対象となるセルのインデックスを計算する
       // TODO: バイリニア補間のウェイトを計算する
       // TODO: バイニリア補間を計算する
-      // x[index(i, j)] = ...
+      if (p_x < 0.5) p_x = 0.5;
+      if (p_x > numCells + 0.5) p_x = numCells + 0.5;
+      if (p_y < 0.5) p_y = 0.5;
+      if (p_y > numCells + 0.5) p_y = numCells + 0.5;
+      let i0 = Math.floor(p_x);
+      let i1 = i0 + 1;
+      let j0 = Math.floor(p_y);
+      let j1 = j0 + 1;
+      let s1 = p_x - i0;
+      let s0 = 1 - s1;
+      let t1 = p_y - j0;
+      let t0 = 1 - t1;
+      x[index(i, j)] =
+        s0 * (t0 * x_0[index(i0, j0)] + t1 * x_0[index(i0, j1)]) +
+        s1 * (t0 * x_0[index(i1, j0)] + t1 * x_0[index(i1, j1)]);
     }
   }
 
@@ -220,39 +234,41 @@ function project(u, v, p, div) {
   }
 
   // TODO: 各セルの発散を中心差分法により計算する
-  // for (let i = 1; i <= numCells; ++i)
-  // {
-  //   for (let j = 1; j <= numCells; ++j)
-  //   {
-  //     div[index(i, j)] = ...
-  //   }
-  // }
+  for (let i = 1; i <= numCells; ++i) {
+    for (let j = 1; j <= numCells; ++j) {
+      div[index(i, j)] =
+        ((u[index(i + 1, j)] - u[index(i - 1, j)]) / -2) * h +
+        ((v[index(i, j + 1)] - v[index(i, j - 1)]) / -2) * h;
+    }
+  }
   setBoundary(div, "continuous");
 
   // ガウスザイデル法によってポアソン方程式を解くことでスカラー場を計算する
   for (let k = 0; k < numIters; ++k) {
     // TODO: 各セルにガウスザイデル法の更新式を適用する
-    // for (let i = 1; i <= numCells; ++i)
-    // {
-    //   for (let j = 1; j <= numCells; ++j)
-    //   {
-    //     p[index(i, j)] = ...
-    //   }
-    // }
+    for (let i = 1; i <= numCells; ++i) {
+      for (let j = 1; j <= numCells; ++j) {
+        p[index(i, j)] =
+          (p[index(i - 1, j)] +
+            p[index(i + 1, j)] +
+            p[index(i, j - 1)] +
+            p[index(i, j + 1)] +
+            div[index(i, j)]) /
+          4;
+      }
+    }
 
     // 境界条件を設定する
     setBoundary(p, "continuous");
   }
 
   // TODO: 速度場から得られたスカラー場の勾配（中央差分法で計算）を引く
-  // for (let i = 1; i <= numCells; ++i)
-  // {
-  //   for (let j = 1; j <= numCells; ++j)
-  //   {
-  //     u[index(i, j)] = ...
-  //     v[index(i, j)] = ...
-  //   }
-  // }
+  for (let i = 1; i <= numCells; ++i) {
+    for (let j = 1; j <= numCells; ++j) {
+      u[index(i, j)] -= (p[index(i + 1, j)] - p[index(i - 1, j)]) / (2 * h);
+      v[index(i, j)] -= (p[index(i, j + 1)] - p[index(i, j - 1)]) / (2 * h);
+    }
+  }
   setBoundary(u, "left_right_walls");
   setBoundary(v, "top_bottom_walls");
 }
