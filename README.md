@@ -33,3 +33,7 @@ https://hotekagi.github.io/gc_assignment/M1_c2interpolating_splines/index.html
 A1:
 
 https://hotekagi.github.io/gc_assignment/A1_minimum/index.html
+
+A3:
+
+https://hotekagi.github.io/gc_assignment/A3_fluid_min/index.html
