@@ -14,6 +14,10 @@ A1:
 
 https://utokyo-iscg-2023-assignment-a1-ik.glitch.me/
 
+A3:
+
+https://utokyo-iscg-2023-a3-fluid.glitch.me
+
 ## implementation
 
 M1:

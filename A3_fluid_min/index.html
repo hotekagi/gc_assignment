@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title id="title">
+      [utokyo-iscg] Advanced Assignment A3 (Fluid Simulation)
+    </title>
+  </head>
+
+  <body>
+    <p>Simulation: <span id="simTime">XX</span> [ms]</p>
+    <p>Drawing: <span id="drawTime">XX</span> [ms]</p>
+    <canvas
+      id="myCanvas"
+      width="800"
+      height="800"
+      style="border: 2px solid #eeeeee"
+    ></canvas>
+
+    <script src="js-colormaps.js"></script>
+    <script src="canvas-toBlob.js"></script>
+    <script src="FileSaver.js"></script>
+    <script src="2d-fluid.js"></script>
+    <script>
+      start();
+    </script>
+  </body>
+</html>
