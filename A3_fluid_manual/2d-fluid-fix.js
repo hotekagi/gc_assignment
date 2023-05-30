@@ -15,6 +15,10 @@
  * - [2] Jos Stam. Real-Time Fluid Dynamics for Games. In Proceedings of the Game Developer Conference 2003. https://www.dgp.toronto.edu/public_user/stam/reality/Research/pdf/GDC03.pdf
  */
 
+window.addEventListener("load", function () {
+  document.body.style.overflow = "hidden";
+});
+
 const canvas = document.getElementById("myCanvas");
 const context = canvas.getContext("2d");
 
