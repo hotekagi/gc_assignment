@@ -17,6 +17,18 @@
 
 window.addEventListener("load", function () {
   document.body.style.overflow = "hidden";
+
+  // ローカルストレージからリロードフラグを取得
+  const reloadFlag = localStorage.getItem("A3_fluid_manual_reloadFlag");
+
+  if (!reloadFlag) {
+    // 初回の読み込み時にフラグをセットしてリロード
+    localStorage.setItem("A3_fluid_manual_reloadFlag", "true");
+    location.reload();
+  } else {
+    // フラグがセットされている場合はリロードを中止
+    localStorage.removeItem("A3_fluid_manual_reloadFlag");
+  }
 });
 
 const canvas = document.getElementById("myCanvas");
