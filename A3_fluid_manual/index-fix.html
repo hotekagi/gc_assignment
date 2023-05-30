@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title id="title">
       [utokyo-iscg] Advanced Assignment A3 (Fluid Simulation)
     </title>
@@ -11,7 +12,7 @@
     <style>
       body {
         overflow: hidden;
-        font-size: 40px;
+        font-size: 20px;
         font-family: "Oswald", sans-serif;
       }
       canvas {
@@ -24,11 +25,13 @@
       }
 
       .input-container {
-        padding: 0 200px;
+        margin-top: -20px;
+        height: min-content;
+        padding: 0 40px;
       }
       input[type="range"] {
         width: 100%;
-        height: 80px;
+        height: 20px;
         background-color: transparent;
         border-radius: 10px;
         outline: none;
@@ -36,26 +39,26 @@
 
       input[type="range"]::-webkit-slider-thumb {
         -webkit-appearance: none;
-        width: 60px;
-        height: 60px;
+        width: 30px;
+        height: 30px;
         background-color: #333;
         border-radius: 10px;
         cursor: pointer;
-        margin-top: -15px; /* スライダーサムをトラックの中央に配置 */
+        margin-top: -10px; /* スライダーサムをトラックの中央に配置 */
       }
 
       input[type="range"]::-moz-range-thumb {
-        width: 60px;
-        height: 60px;
+        width: 30px;
+        height: 10px;
         background-color: #333;
         border-radius: 10px;
         cursor: pointer;
-        margin-top: -15px; /* スライダーサムをトラックの中央に配置 */
+        margin-top: -10px; /* スライダーサムをトラックの中央に配置 */
       }
 
       input[type="range"]::-webkit-slider-runnable-track {
         width: 100%;
-        height: 30px;
+        height: 10px;
         background-color: #ccc;
         border-radius: 10px;
       }
@@ -67,7 +70,7 @@
         border-radius: 10px;
       }
       .refresh-button {
-        font-size: 40px;
+        font-size: 20px;
         font-weight: bold;
 
         display: inline-block;
@@ -79,20 +82,33 @@
         outline: none;
         cursor: pointer;
 
-        margin-top: 60px;
-        margin-left: 60px;
+        margin-top: 10px;
+        margin-left: 40px;
       }
     </style>
+    <script>
+      // スクリーン幅に基づいてリダイレクトする関数
+      function redirectBasedOnScreenWidth() {
+        // 現在の画面幅を取得
+        var screenWidth = window.innerWidth;
+        console.log(screenWidth);
+
+        // 画面幅が指定の閾値（例: 600px）以下の場合はPC版へ遷移
+        if (screenWidth >= 750) {
+          window.location.href = "index-w.html"; // スマホ版のURL
+        }
+      }
+    </script>
   </head>
 
-  <body onload="update()">
+  <body onload="redirectBasedOnScreenWidth(); update()">
     <p style="text-align: center">
       <u> Please touch and slide within the canvas. Fluid will flow. </u>
     </p>
     <canvas
       id="myCanvas"
-      width="900"
-      height="900"
+      width="350"
+      height="350"
       style="border: 2px solid #eeeeee"
     ></canvas>
     <br />
@@ -103,7 +119,7 @@
         name="speed"
         id="slider"
         min="0.0"
-        max="1000.0"
+        max="200.0"
         value="50.0"
       />
     </div>
