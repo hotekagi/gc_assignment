@@ -15,21 +15,21 @@
  * - [2] Jos Stam. Real-Time Fluid Dynamics for Games. In Proceedings of the Game Developer Conference 2003. https://www.dgp.toronto.edu/public_user/stam/reality/Research/pdf/GDC03.pdf
  */
 
-// Safariの下に引っ張って画面が動く挙動を防止する
-document.addEventListener(
-  "touchmove",
-  function (event) {
-    event.preventDefault();
-  },
-  { passive: false }
-);
-
 window.addEventListener("load", function () {
   document.body.style.overflow = "hidden";
 });
 
 const canvas = document.getElementById("myCanvas");
 const context = canvas.getContext("2d");
+
+// Safariの下に引っ張って画面が動く挙動を防止する
+canvas.addEventListener(
+  "touchmove",
+  function (event) {
+    event.preventDefault();
+  },
+  { passive: false }
+);
 
 /**
  * 空間離散化の解像度
