@@ -15,20 +15,17 @@
  * - [2] Jos Stam. Real-Time Fluid Dynamics for Games. In Proceedings of the Game Developer Conference 2003. https://www.dgp.toronto.edu/public_user/stam/reality/Research/pdf/GDC03.pdf
  */
 
+// Safariの下に引っ張って画面が動く挙動を防止する
+document.addEventListener(
+  "touchmove",
+  function (event) {
+    event.preventDefault();
+  },
+  { passive: false }
+);
+
 window.addEventListener("load", function () {
   document.body.style.overflow = "hidden";
-
-  // ローカルストレージからリロードフラグを取得
-  const reloadFlag = localStorage.getItem("A3_fluid_manual_reloadFlag");
-
-  if (!reloadFlag) {
-    // 初回の読み込み時にフラグをセットしてリロード
-    localStorage.setItem("A3_fluid_manual_reloadFlag", "true");
-    location.reload();
-  } else {
-    // フラグがセットされている場合はリロードを中止
-    localStorage.removeItem("A3_fluid_manual_reloadFlag");
-  }
 });
 
 const canvas = document.getElementById("myCanvas");
