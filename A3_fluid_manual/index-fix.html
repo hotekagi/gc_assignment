@@ -4,10 +4,26 @@
     <title id="title">
       [utokyo-iscg] Advanced Assignment A3 (Fluid Simulation)
     </title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Oswald:700"
+      rel="stylesheet"
+    />
     <style>
       body {
         overflow: hidden;
+        font-size: 40px;
+        font-family: "Oswald", sans-serif;
       }
+      canvas {
+        display: block;
+        margin: 0 auto;
+      }
+
+      /* p タグの上下に余白を開けない　*/
+      p {
+        margin: 0;
+      }
+
       .input-container {
         padding: 0 200px;
       }
@@ -48,16 +64,17 @@
         border-radius: 10px;
       }
       .refresh-button {
-        display: inline-block;
+        font-size: 40px;
+        font-weight: bold;
+
+        /* display: inline-block;
         padding: 10px 20px;
         background-color: #ccc;
         color: #333;
-        font-size: 16px;
-        font-weight: bold;
         text-decoration: none;
         border-radius: 10px;
         outline: none;
-        cursor: pointer;
+        cursor: pointer; */
       }
     </style>
   </head>
