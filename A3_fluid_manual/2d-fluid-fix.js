@@ -360,7 +360,7 @@ function draw() {
   }
 }
 
-let fluidSpeed = 500.0;
+let fluidSpeed = 100.0;
 
 function update() {
   // 速度や密度のソースを指定する
@@ -435,6 +435,7 @@ canvas.addEventListener("mousemove", function (event) {
 const slider = document.getElementById("slider");
 slider.addEventListener("input", function () {
   fluidSpeed = parseFloat(slider.value).toFixed(1);
+  document.getElementById("fluidSpeed").innerHTML = fluidSpeed;
 });
 
 // スマホでのタッチイベントのリスナーを追加
