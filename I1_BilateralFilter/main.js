@@ -4,23 +4,26 @@ var context = canvas.getContext("2d");
 function smooth_gaussian(width, height, original, smoothed, sigma) {
   var r = Math.ceil(sigma * 3);
   var r2 = 2 * r + 1;
+
   // precompute spatial stencil
   var stencil = new Float32Array(r2 * r2);
-  for (var dy = -r; dy <= r; ++dy)
+  for (var dy = -r; dy <= r; ++dy) {
     for (var dx = -r; dx <= r; ++dx) {
       var h = Math.sqrt(dx * dx + dy * dy);
       var idx = dx + r + r2 * (dy + r);
       stencil[idx] = Math.exp((-h * h) / (2 * sigma * sigma));
     }
+  }
+
   // apply filter
-  for (var py = 0; py < height; py++)
+  for (var py = 0; py < height; py++) {
     for (var px = 0; px < width; px++) {
       var idx0 = px + width * py;
       var r_sum = 0;
       var g_sum = 0;
       var b_sum = 0;
       var w_sum = 0;
-      for (var dy = -r; dy <= r; ++dy)
+      for (var dy = -r; dy <= r; ++dy) {
         for (var dx = -r; dx <= r; ++dx) {
           var px1 = px + dx;
           var py1 = py + dy;
@@ -36,11 +39,14 @@ function smooth_gaussian(width, height, original, smoothed, sigma) {
             w_sum += w;
           }
         }
+      }
+
       smoothed[4 * idx0] = r_sum / w_sum;
       smoothed[4 * idx0 + 1] = g_sum / w_sum;
       smoothed[4 * idx0 + 2] = b_sum / w_sum;
       smoothed[4 * idx0 + 3] = 255;
     }
+  }
 }
 
 function smooth_bilateral(
@@ -53,23 +59,26 @@ function smooth_bilateral(
 ) {
   var r = Math.ceil(sigma_space * 3);
   var r2 = 2 * r + 1;
+
   // precompute spatial stencil
   var stencil = new Float32Array(r2 * r2);
-  for (var dy = -r; dy <= r; ++dy)
+  for (var dy = -r; dy <= r; ++dy) {
     for (var dx = -r; dx <= r; ++dx) {
       var h = Math.sqrt(dx * dx + dy * dy);
       var idx = dx + r + r2 * (dy + r);
       stencil[idx] = Math.exp((-h * h) / (2 * sigma_space * sigma_space));
     }
+  }
+
   // apply filter
-  for (var py = 0; py < height; py++)
+  for (var py = 0; py < height; py++) {
     for (var px = 0; px < width; px++) {
       var idx0 = px + width * py;
       var r_sum = 0;
       var g_sum = 0;
       var b_sum = 0;
       var w_sum = 0;
-      for (var dy = -r; dy <= r; ++dy)
+      for (var dy = -r; dy <= r; ++dy) {
         for (var dx = -r; dx <= r; ++dx) {
           var px1 = px + dx;
           var py1 = py + dy;
@@ -79,7 +88,14 @@ function smooth_bilateral(
             var r1 = original[4 * idx1];
             var g1 = original[4 * idx1 + 1];
             var b1 = original[4 * idx1 + 2];
-            var w_range; // TODO: take distance between pixel colors at idx0 & idx1, plug it into Gaussian
+            var w_range = Math.exp(
+              -(
+                (r1 - original[4 * idx0]) * (r1 - original[4 * idx0]) +
+                (g1 - original[4 * idx0 + 1]) * (g1 - original[4 * idx0 + 1]) +
+                (b1 - original[4 * idx0 + 2]) * (b1 - original[4 * idx0 + 2])
+              ) /
+                (2 * sigma_range * sigma_range)
+            );
             var w = w_space * w_range;
             r_sum += w * r1;
             g_sum += w * g1;
@@ -87,11 +103,14 @@ function smooth_bilateral(
             w_sum += w;
           }
         }
+      }
+
       smoothed[4 * idx0] = r_sum / w_sum;
       smoothed[4 * idx0 + 1] = g_sum / w_sum;
       smoothed[4 * idx0 + 2] = b_sum / w_sum;
       smoothed[4 * idx0 + 3] = 255;
     }
+  }
 }
 
 function subtract(width, height, original, smoothed, detail) {
@@ -138,74 +157,93 @@ function init() {
   };
 
   document.getElementById("btn_do_smoothing").onclick = function () {
-    var width = canvas.width;
-    var height = canvas.height;
+    this.textContent = "Loading...";
 
-    // read original
-    context.drawImage(document.getElementById("img_original"), 0, 0);
-    var original = context.getImageData(0, 0, width, height);
+    setTimeout(function () {
+      var width = canvas.width;
+      var height = canvas.height;
 
-    // do smoothing
-    var smoothed = context.createImageData(width, height);
-    var sigma_space = Number(
-      document.getElementById("input_num_sigma_space").value
-    );
-    var sigma_range = Number(
-      document.getElementById("input_num_sigma_range").value
-    );
+      // read original
+      context.drawImage(document.getElementById("img_original"), 0, 0);
+      var original = context.getImageData(0, 0, width, height);
 
-    if (document.getElementById("input_chk_use_bilateral").checked) {
-      smooth_bilateral(
-        width,
-        height,
-        original.data,
-        smoothed.data,
-        sigma_space,
-        sigma_range
+      // do smoothing
+      var smoothed = context.createImageData(width, height);
+      var sigma_space = Number(
+        document.getElementById("input_num_sigma_space").value
       );
-    } else {
-      smooth_gaussian(width, height, original.data, smoothed.data, sigma_space);
-    }
+      var sigma_range = Number(
+        document.getElementById("input_num_sigma_range").value
+      );
 
-    context.putImageData(smoothed, 0, 0);
-    document.getElementById("img_smoothed").src = canvas.toDataURL();
+      if (document.getElementById("input_chk_use_bilateral").checked) {
+        smooth_bilateral(
+          width,
+          height,
+          original.data,
+          smoothed.data,
+          sigma_space,
+          sigma_range
+        );
+      } else {
+        smooth_gaussian(
+          width,
+          height,
+          original.data,
+          smoothed.data,
+          sigma_space
+        );
+      }
 
-    // detail = original - smoothed
-    var detail = context.createImageData(width, height);
-    subtract(width, height, original.data, smoothed.data, detail.data);
-    context.putImageData(detail, 0, 0);
-    document.getElementById("img_detail").src = canvas.toDataURL();
+      context.putImageData(smoothed, 0, 0);
+      document.getElementById("img_smoothed").src = canvas.toDataURL();
+
+      // detail = original - smoothed
+      var detail = context.createImageData(width, height);
+      subtract(width, height, original.data, smoothed.data, detail.data);
+      context.putImageData(detail, 0, 0);
+      document.getElementById("img_detail").src = canvas.toDataURL();
+
+      document.getElementById("btn_do_smoothing").textContent = "Do Smoothing";
+    }, 0);
   };
 
   document.getElementById("btn_enhance_detail").onclick = function () {
-    var width = canvas.width;
-    var height = canvas.height;
+    this.textContent = "Loading...";
 
-    // read smoothed and detail
-    context.drawImage(document.getElementById("img_smoothed"), 0, 0);
+    setTimeout(function () {
+      var width = canvas.width;
+      var height = canvas.height;
 
-    var smoothed = context.getImageData(0, 0, width, height);
-    context.drawImage(document.getElementById("img_detail"), 0, 0);
+      // read smoothed and detail
+      context.drawImage(document.getElementById("img_smoothed"), 0, 0);
 
-    var detail = context.getImageData(0, 0, width, height);
+      var smoothed = context.getImageData(0, 0, width, height);
+      context.drawImage(document.getElementById("img_detail"), 0, 0);
 
-    // enhanced = smoothed + scale * detail
-    var enhanced = context.createImageData(width, height);
-    var detail_scaling = Number(
-      document.getElementById("input_num_detail_scaling").value
-    );
+      var detail = context.getImageData(0, 0, width, height);
 
-    enhance_detail(
-      width,
-      height,
-      smoothed.data,
-      detail.data,
-      detail_scaling,
-      enhanced.data
-    );
+      // enhanced = smoothed + scale * detail
+      var enhanced = context.createImageData(width, height);
+      var detail_scaling = Number(
+        document.getElementById("input_num_detail_scaling").value
+      );
 
-    context.putImageData(enhanced, 0, 0);
-    document.getElementById("img_enhanced").src = canvas.toDataURL();
+      enhance_detail(
+        width,
+        height,
+        smoothed.data,
+        detail.data,
+        detail_scaling,
+        enhanced.data
+      );
+
+      context.putImageData(enhanced, 0, 0);
+      document.getElementById("img_enhanced").src = canvas.toDataURL();
+
+      document.getElementById("btn_enhance_detail").textContent =
+        "Enhance Detail";
+    }, 0);
   };
 
   document.getElementById("img_original").src =
