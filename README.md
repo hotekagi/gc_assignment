@@ -20,6 +20,10 @@ https://utokyo-iscg-2023-a3-fluid.glitch.me
 
 http://graphics.cs.cmu.edu/nsp/course/15-464/Fall09/papers/StamFluidforGames.pdf
 
+I1:
+
+https://utokyo-iscg-2023-assigment-i1-filter.glitch.me
+
 ## implementation
 
 M1:
@@ -41,3 +45,7 @@ https://hotekagi.github.io/gc_assignment/A3_fluid_min/index.html
 https://hotekagi.github.io/gc_assignment/A3_fluid_manual/index-w.html
 
 https://hotekagi.github.io/gc_assignment/A3_fluid_manual/index-s.html
+
+I1:
+
+https://hotekagi.github.io/gc_assignment/I1_BilateralFilter/index.html
